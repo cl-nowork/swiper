@@ -1,7 +1,9 @@
-import time
 import hashlib
+import time
+
 import requests
-from swiper.config import WANGYI_API, WANGYI_APP_KEY, WANGYI_APP_SECRET, WANGYI_Nonce
+from swiper.config import (WANGYI_API, WANGYI_APP_SECRET, WANGYI_HEADERS,
+                           WANGYI_Nonce)
 
 
 def send_msg(phone, vcode):
@@ -12,13 +14,10 @@ def send_msg(phone, vcode):
         'mobile': phone,
         'authCode': vcode
     }
-    headers = {
-        'AppKey': WANGYI_APP_KEY,
-        'Nonce': WANGYI_Nonce,
-        'CurTime': cur_time,
-        'CheckSum': check_sum,
-    }
-    resp = requests.post(WANGYI_API, data=data, headers=headers, verify=False)
+    req_headers = WANGYI_HEADERS.copy()
+    req_headers['CurTime'] = cur_time
+    req_headers['CheckSum'] = check_sum
+    resp = requests.post(WANGYI_API, data=data, headers=req_headers, verify=False)
     return resp
 
 

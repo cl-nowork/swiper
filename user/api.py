@@ -1,11 +1,13 @@
+from commons import status
 from commons.keys import VCODE_KEY_FORMAT
 from commons.utils import gen_nickname
 from django.core.cache import cache
 from django.http.response import JsonResponse
+from django.shortcuts import redirect
+from swiper import config
 
-from user.logics import send_vcode
+from user import logics
 from user.models import User
-from commons import status
 
 # Create your views here.
 
@@ -15,7 +17,7 @@ def get_vcode(request):
     phonenum = request.POST.get('phonenum')
     if not phonenum:
         return JsonResponse({'code': status.INVILD_PATAMS, 'data': None, 'msg': 'phonenum 字段为空'})
-    if send_vcode(phonenum):
+    if logics.send_vcode(phonenum):
         return JsonResponse({'code': status.OK, 'data': None, 'msg': '短信发送成功'})
     return JsonResponse({'code': status.VCODE_ERROR, 'data': None, 'msg': '短信发送失败'})
 
@@ -35,3 +37,29 @@ def check_vcode(request):
         return JsonResponse({'code': status.OK, 'data': user.to_dict(), 'msg': '登录成功'})
     else:
         return JsonResponse({'code': status.INVILID_VCODE, 'data': None, 'msg': '验证码错误'})
+
+
+def wb_auth(request):
+    '''微博授权页'''
+    return redirect(config.WB_AUTH_URL)
+
+
+def wb_callback(request):
+    '''微博回调接口'''
+    code = request.GET.get('code')
+    access_token, uid = logics.get_access_token(code)
+    if not access_token:
+        return JsonResponse({
+            'code': status.ACCESS_TOKEN_ERROR,
+            'data': None,
+            'msg': '获取微博access_token失败'
+        })
+    user_info = logics.get_user_info(access_token, uid)
+    if not user_info:
+        return JsonResponse({'code': status.USER_INFO_ERROR, 'data': None, 'msg': '获取微博用户信息失败'})
+    try:
+        user = User.objects.get(ext_uid=user_info['ext_uid'])
+    except User.DoesNotExist:
+        user = User.objects.create(**user_info)
+    request.session['uid'] = user.id
+    return JsonResponse({'code': status.OK, 'data': user.to_dict(), 'msg': '登录成功'})
