@@ -8,6 +8,7 @@ from swiper import config
 
 from user import logics
 from user.models import User
+from user.forms import UserForms, ProfileForms
 
 # Create your views here.
 
@@ -63,3 +64,30 @@ def wb_callback(request):
         user = User.objects.create(**user_info)
     request.session['uid'] = user.id
     return JsonResponse({'code': status.OK, 'data': user.to_dict(), 'msg': '登录成功'})
+
+
+def get_profile(request):
+    '''获取交友资料'''
+    profile_data = request.user.profile.to_dict()
+    return JsonResponse({'code': status.OK, 'data': profile_data, 'msg': '查询成功'})
+
+
+def set_profile(request):
+    '''修改交友资料'''
+    user_form = UserForms(request.POST)
+    profile_form = ProfileForms(request.POST)
+    if not user_form.is_valid():
+        return JsonResponse({'code': status.USER_DATA_ERROR, 'data': user_form.errors, 'msg': '参数错误'})
+    if not profile_form.is_valid():
+        return JsonResponse({'code': status.PROFILE_DATA_ERROR, 'data': profile_form.errors, 'msg': '参数错误'})
+    user = request.user
+    user.__dict__.update(user_form.cleaned_data)
+    user.save()
+    user.profile.__dict__.update(profile_form.cleaned_data)
+    user.profile.save()
+    return JsonResponse({'code': status.OK, 'data': None, 'msg': '更新成功'})
+
+
+def upload_avatar(request):
+    '''上传个人头像'''
+    return JsonResponse({})

@@ -10,6 +10,7 @@ class User(models.Model):
         ('上海', '上海'),
         ('广州', '广州'),
         ('深圳', '深圳'),
+        ('浙江', '浙江'),
     )
     phonenum = models.CharField(max_length=16, verbose_name='手机号')
     nickname = models.CharField(max_length=20, verbose_name='昵称')
@@ -22,8 +23,15 @@ class User(models.Model):
     class Meta:
         db_table = 'user'
 
+    @property
+    def profile(self):
+        if not hasattr(self, '_profile'):
+            self._profile, _ = Profile.objects.get_or_create(id=self.id)
+        return self._profile
+
     def to_dict(self):
         return {
+            'id': self.id,
             'phonenum': self.phonenum,
             'nickname': self.nickname,
             'sex': self.sex,
@@ -48,3 +56,17 @@ class Profile(models.Model):
 
     class Meta:
         db_table = 'profile'
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'dating_sex': self.dating_sex,
+            'dating_location': self.dating_location,
+            'min_dating_age': self.min_dating_age,
+            'max_dating_age': self.max_dating_age,
+            'min_distance': self.min_distance,
+            'max_distance': self.max_distance,
+            'vibration': self.vibration,
+            'only_matched': self.only_matched,
+            'auto_play': self.auto_play,
+        }
