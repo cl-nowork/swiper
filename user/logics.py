@@ -1,5 +1,5 @@
 from libs.sms import send_msg
-from commons.keys import VCODE_KEY_FORMAT
+from commons import keys
 from django.core.cache import cache
 from swiper import config
 from commons.utils import gen_vcode
@@ -12,7 +12,7 @@ def send_vcode(phonenum):
     # 生成验证码
     vcode = gen_vcode(4)
     print(f'验证码：{vcode}')
-    cache.set(VCODE_KEY_FORMAT % phonenum, vcode, 3 * 60)
+    cache.set(keys.VCODE_KEY_FORMAT % phonenum, vcode, 3 * 60)
 
     resp = send_msg(phonenum, vcode)
     if resp.status_code == 200:
@@ -50,3 +50,13 @@ def get_user_info(access_token, uid):
         }
         return user_info
     return None
+
+
+def save_upload_avatar(user, avatar):
+    """本地存储avatar"""
+    filename = keys.AVATAR_KEY_FORMAT % user.id
+    filepath = f'/tmp/{filename}'
+    with open(filepath, 'wb') as fp:
+        for chunk in avatar.chunks():
+            fp.write(chunk)
+    return filename, filepath

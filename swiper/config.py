@@ -1,5 +1,11 @@
 from urllib.parse import urlencode
 
+# 七牛云对象存储
+QN_ACCESSKEY = 'D3F_KQg_fm1jjGKN3kj3FhPIErNl09s7fA6cn9MA'
+QN_SECRETKEY = '4JhpHsUeG4m2BZevuMGX8L2v60nqzXgeLJRN-cEI'
+QN_BUCKETNAME = 'swiper-cl'
+QN_BASE_URL = 'http://qsxntfzyk.hd-bkt.clouddn.com'
+
 # 网易短信
 WANGYI_API = 'http://api.netease.im/sms/sendcode.action'
 WANGYI_APP_KEY = 'a6185afcb1063709d1aa1e25f03757e6'
