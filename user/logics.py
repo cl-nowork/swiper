@@ -1,10 +1,14 @@
+import os
+
+import requests
+
 from libs.sms import send_msg
+from libs.qn_cloud import upload_to_qn
 from commons import keys
 from django.core.cache import cache
 from swiper import config
 from commons.utils import gen_vcode
-
-import requests
+from tasks import celery_app
 
 
 def send_vcode(phonenum):
@@ -60,3 +64,13 @@ def save_upload_avatar(user, avatar):
         for chunk in avatar.chunks():
             fp.write(chunk)
     return filename, filepath
+
+
+@celery_app.task
+def handle_avatar(user, avatar):
+    filename, filepath = save_upload_avatar(user, avatar)
+    avatar_url = upload_to_qn(filename, filepath)
+    user.avatar = avatar_url
+    user.save()
+    if os.path.exists(filepath):
+        os.remove(filepath)

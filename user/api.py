@@ -1,5 +1,3 @@
-import os
-
 from django.core.cache import cache
 from django.shortcuts import redirect
 
@@ -8,7 +6,6 @@ from commons.keys import VCODE_KEY_FORMAT
 from commons.utils import gen_nickname
 from swiper import config
 from libs.http import render_json
-from libs.qn_cloud import upload_to_qn
 from user import logics
 from user.models import User
 from user.forms import UserForms, ProfileForms
@@ -90,9 +87,5 @@ def set_profile(request):
 def upload_avatar(request):
     '''上传个人头像'''
     avatar = request.FILES.get('avatar')
-    filename, filepath = logics.save_upload_avatar(request.user, avatar)
-    avatar_url = upload_to_qn(filename, filepath)
-    request.user.avatar = avatar_url
-    request.user.save()
-    os.remove(filepath)
+    logics.handle_avatar.delay(request.user, avatar)
     return render_json(msg='上传成功')
