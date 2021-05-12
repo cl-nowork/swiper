@@ -18,7 +18,7 @@ class User(models.Model):
     birth_day = models.DateField(default='1990-1-1', verbose_name='出生日')
     avatar = models.CharField(max_length=256, verbose_name='个人形象')
     location = models.CharField(max_length=20, choices=LOCATION, verbose_name='常居地')
-    ext_uid = models.CharField(default='', max_length=16, unique=True, verbose_name='第三登录的唯一标识')
+    ext_uid = models.CharField(max_length=16, unique=True, null=True, blank=True, verbose_name='第三登录的唯一标识')
 
     class Meta:
         db_table = 'user'
