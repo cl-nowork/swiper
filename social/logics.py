@@ -1,6 +1,8 @@
 import datetime
 
 from user.models import User
+from social.models import Swiped, Friend
+
 
 def rcmd(user):
     """推荐可滑动的用户"""
@@ -20,3 +22,14 @@ def rcmd(user):
     # TODO: 排除已滑过的用户
 
     return users
+
+
+def like_someone(user, sid):
+    '''喜欢某人'''
+    Swiped.objects.create(uid=user.id, sid=sid, stype='like')
+
+    if Swiped.is_liked(sid, user.id):
+        Friend.make_friend(user.id, sid)
+        return True
+    else:
+        return False
