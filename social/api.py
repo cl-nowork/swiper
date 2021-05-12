@@ -14,3 +14,10 @@ def like(request):
     sid = int(request.POST.get('sid'))
     is_matched = logics.like_someone(request.user, sid)
     return render_json({'matched': is_matched}, msg='success')
+
+
+def superlike(request):
+    '''上滑, 超级喜欢'''
+    sid = int(request.POST.get('sid'))
+    is_matched = logics.superlike_someone(request.user, sid)
+    return render_json({'matched': is_matched}, msg='success')

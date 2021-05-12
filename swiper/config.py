@@ -1,5 +1,12 @@
 from urllib.parse import urlencode
 
+# redis 配置
+REDIS_CONFIG = {
+    'host': 'localhost',
+    'port': 6379,
+    'db': 3
+}
+
 # 七牛云对象存储
 QN_ACCESSKEY = 'D3F_KQg_fm1jjGKN3kj3FhPIErNl09s7fA6cn9MA'
 QN_SECRETKEY = '4JhpHsUeG4m2BZevuMGX8L2v60nqzXgeLJRN-cEI'
