@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from commons.status import OK
 
 
-def render_json(data=None, code=OK, msg=''):
+def render_json(data=None, code=OK, msg='success'):
     '''json返回格式'''
     result = {'code': code, 'data': data, 'msg': msg}
     if settings.DEBUG:

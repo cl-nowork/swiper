@@ -1,6 +1,8 @@
+from django.views.decorators.http import require_http_methods
+
 from social import logics
 from libs.http import render_json
-from social.models import Swiped
+from social.models import Swiped, Friend
 from user.models import User
 
 
@@ -37,4 +39,13 @@ def who_liked_me(request):
     like_me_ids = Swiped.who_liked_me(request.user.id)
     users = User.objects.filter(id__in=like_me_ids)
     result = [user.to_dict() for user in users]
-    return render_json(result, msg='success')
+    return render_json(result)
+
+
+@require_http_methods(['GET'])
+def friend_list(request):
+    '''查询好友列表'''
+    friend_id_list = Friend.friend_ids(request.user.id)
+    users = User.objects.filter(id__in=friend_id_list)
+    result = [user.to_dict() for user in users]
+    return render_json(result)
