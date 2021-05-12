@@ -17,10 +17,10 @@ def get_vcode(request):
     '''获取短信验证码'''
     phonenum = request.POST.get('phonenum')
     if not phonenum:
-        return render_json(code=status.INVILD_PATAMS, data=None, msg='phonenum 字段为空')
+        raise status.InvildParams(msg='phonenum 字段为空')
     if logics.send_vcode(phonenum):
         return render_json(data=None, msg='短信发送成功')
-    return render_json(code=status.VCODE_ERROR, data=None, msg='短信发送失败')
+    raise status.VCODE_ERROR(msg='短信发送失败')
 
 
 def check_vcode(request):
@@ -37,7 +37,7 @@ def check_vcode(request):
         request.session['uid'] = user.id
         return render_json(data=user.to_dict(), msg='登录成功')
     else:
-        return render_json(code=status.INVILID_VCODE, data=None, msg='验证码错误')
+        raise status.InvilidVcode(msg='验证码错误')
 
 
 def wb_auth(request):
@@ -50,10 +50,10 @@ def wb_callback(request):
     code = request.GET.get('code')
     access_token, uid = logics.get_access_token(code)
     if not access_token:
-        return render_json(status.ACCESS_TOKEN_ERROR, data=None, msg='获取微博access_token失败')
+        raise status.AccessTokenError(msg='获取微博access_token失败')
     user_info = logics.get_user_info(access_token, uid)
     if not user_info:
-        return render_json(code=status.USER_INFO_ERROR, data=None, msg='获取微博用户信息失败')
+        raise status.UserInfoError(msg='获取微博用户信息失败')
     try:
         user = User.objects.get(ext_uid=user_info['ext_uid'])
     except User.DoesNotExist:
@@ -73,9 +73,9 @@ def set_profile(request):
     user_form = UserForms(request.POST)
     profile_form = ProfileForms(request.POST)
     if not user_form.is_valid():
-        return render_json(code=status.USER_DATA_ERROR, data=user_form.errors, msg='参数错误')
+        raise status.UserDataError(data=user_form.errors, msg='参数错误')
     if not profile_form.is_valid():
-        return render_json(code=status.PROFILE_DATA_ERROR, data=profile_form.errors, msg='参数错误')
+        raise status.ProfileDataError(data=profile_form.errors, msg='参数错误')
     user = request.user
     user.__dict__.update(user_form.cleaned_data)
     user.save()

@@ -53,6 +53,7 @@ MIDDLEWARE = [
 
     # 自定义中间件
     'commons.middlewares.AuthorizeMiddleware',
+    'commons.middlewares.LogicErrorMiddleware'
 ]
 
 ROOT_URLCONF = 'swiper.urls'
