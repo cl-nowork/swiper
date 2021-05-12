@@ -31,7 +31,7 @@ class Friend(models.Model):
     class Meta:
         db_table = 'friend'
 
-    @classmethod)
+    @classmethod
     def make_friend(cls, uid, sid):
         '''创建好友关系接口'''
         uid1, uid2 = (uid, sid) if uid < sid else (sid, uid)
