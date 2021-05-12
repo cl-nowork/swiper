@@ -55,3 +55,9 @@ def superlike_someone(user, sid):
         return True
     else:
         return False
+
+
+def dislike_someone(user, sid):
+    '''不喜欢某人'''
+    Swiped.swipe(uid=user.id, sid=sid, stype='dislike')
+    rds.zrem(SUPERLIKED_KEY_FORMAT % user.id, sid)

@@ -5,4 +5,5 @@ urlpatterns = [
     url(r'^get_rcmd_users', api.get_rcmd_users),
     url(r'^like', api.like),
     url(r'^superlike', api.superlike),
+    url(r'^dislike', api.dislike),
 ]
