@@ -13,4 +13,4 @@ def like(request):
     '''右滑, 喜欢'''
     sid = int(request.POST.get('sid'))
     is_matched = logics.like_someone(request.user, sid)
-    return render_json({'matched': is_matched})
+    return render_json({'matched': is_matched}, msg='success')

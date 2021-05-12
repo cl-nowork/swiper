@@ -12,7 +12,7 @@ def rcmd(user):
     min_birth_day = today - datetime.timedelta(profile.max_dating_age * 365)
     max_birth_day = today - datetime.timedelta(profile.min_dating_age * 365)
 
-    sid_list = Swiped.objects.filter(uid=user.id).values_list('id', flat=True)
+    sid_list = Swiped.objects.filter(uid=user.id).values_list('sid', flat=True)
 
     users = User.objects.filter(
         sex=profile.dating_sex,
@@ -25,7 +25,7 @@ def rcmd(user):
 
 def like_someone(user, sid):
     '''喜欢某人'''
-    Swiped.objects.create(uid=user.id, sid=sid, stype='like')
+    Swiped.swipe(uid=user.id, sid=sid, stype='like')
 
     if Swiped.is_liked(sid, user.id):
         Friend.make_friend(user.id, sid)

@@ -22,6 +22,16 @@ class Swiped(models.Model):
         return cls.objects.filter(uid=uid, sid=sid,
                                   stype__in=['like', 'superlike']).exists()
 
+    @classmethod
+    def swipe(cls, uid, sid, stype):
+        '''执行滑动'''
+        if stype not in ['like', 'dislike', 'superlike']:
+            return
+        if cls.objects.filter(uid=uid, sid=sid).exists():
+            return
+        else:
+            return cls.objects.create(uid=uid, sid=sid, stype=stype)
+
 
 class Friend(models.Model):
     '''好友表'''
@@ -35,4 +45,4 @@ class Friend(models.Model):
     def make_friend(cls, uid, sid):
         '''创建好友关系接口'''
         uid1, uid2 = (uid, sid) if uid < sid else (sid, uid)
-        cls.objects.create(uid1=uid1, uid2=uid2)
+        cls.objects.get_or_create(uid1=uid1, uid2=uid2)
