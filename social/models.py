@@ -33,6 +33,11 @@ class Swiped(models.Model):
         else:
             return cls.objects.create(uid=uid, sid=sid, stype=stype)
 
+    @classmethod
+    def who_liked_me(cls, uid):
+        '''都有谁喜欢我'''
+        return cls.objects.filter(sid=uid, stype__in=['like', 'superlike']).values_list('uid', flat=True)
+
 
 class Friend(models.Model):
     '''好友表'''
