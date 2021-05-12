@@ -1,7 +1,7 @@
 from django.utils.deprecation import MiddlewareMixin
-from django.http import JsonResponse
 from user.models import User
 from commons import status
+from libs.http import render_json
 
 
 class AuthorizeMiddleware(MiddlewareMixin):
@@ -18,5 +18,13 @@ class AuthorizeMiddleware(MiddlewareMixin):
             return
         uid = request.session.get('uid')
         if not uid:
-            return JsonResponse({'code': status.NO_LOGIN_ERROR, 'data': None, 'msg': '需要登录'})
+            raise status.NoLoginError(msg='需要登录')
         request.user = User.objects.get(id=uid)
+
+
+class LogicErrorMiddleware(MiddlewareMixin):
+    '''逻辑错误中间件'''
+
+    def process_exception(self, request, exception):
+        if isinstance(exception, status.LogicError):
+            return render_json(code=exception.code, data=exception.data, msg=exception.msg)

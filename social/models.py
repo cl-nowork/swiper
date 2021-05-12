@@ -1,5 +1,7 @@
 from django.db import models
 
+from commons import status
+
 
 class Swiped(models.Model):
     '''滑动记录'''
@@ -19,16 +21,15 @@ class Swiped(models.Model):
     @classmethod
     def is_liked(cls, uid, sid):
         '''检查是否喜欢过某人'''
-        return cls.objects.filter(uid=uid, sid=sid,
-                                  stype__in=['like', 'superlike']).exists()
+        return cls.objects.filter(uid=uid, sid=sid, stype__in=['like', 'superlike']).exists()
 
     @classmethod
     def swipe(cls, uid, sid, stype):
         '''执行滑动'''
         if stype not in ['like', 'dislike', 'superlike']:
-            return
+            raise ValueError('stype 参数错误')
         if cls.objects.filter(uid=uid, sid=sid).exists():
-            return
+            raise status.SwipeRepeatError(msg='重复滑动')
         else:
             return cls.objects.create(uid=uid, sid=sid, stype=stype)
 
