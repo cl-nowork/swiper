@@ -20,6 +20,9 @@ class User(models.Model):
     location = models.CharField(max_length=20, choices=LOCATION, verbose_name='常居地')
     ext_uid = models.CharField(max_length=16, unique=True, null=True, blank=True, verbose_name='第三登录的唯一标识')
 
+    vip_id = models.IntegerField(default=1, verbose_name='用户对应的vip')
+    vip_expired = models.DateTimeField(default='2000-1-1', verbose_name='会员过期时间')
+
     class Meta:
         db_table = 'user'
 

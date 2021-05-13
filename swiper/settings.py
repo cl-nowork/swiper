@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 自定义模块
     'user',
-    'social'
+    'social',
+    'vip'
 ]
 
 MIDDLEWARE = [
