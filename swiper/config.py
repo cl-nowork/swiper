@@ -7,6 +7,10 @@ REDIS_CONFIG = {
     'db': 3
 }
 
+# 程序：反悔配置
+DAILY_REWIND_TIMES = 3      # 每日反悔次数
+REWIND_TIMEOUT = 5 * 60     # 反悔时间间隔描述
+
 # 七牛云对象存储
 QN_ACCESSKEY = 'D3F_KQg_fm1jjGKN3kj3FhPIErNl09s7fA6cn9MA'
 QN_SECRETKEY = '4JhpHsUeG4m2BZevuMGX8L2v60nqzXgeLJRN-cEI'

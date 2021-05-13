@@ -49,3 +49,9 @@ def friend_list(request):
     users = User.objects.filter(id__in=friend_id_list)
     result = [user.to_dict() for user in users]
     return render_json(result)
+
+
+def rewind(request):
+    '''反悔'''
+    logics.rewind_swiped(request.user)
+    return render_json(msg='success')

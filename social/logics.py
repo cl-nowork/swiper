@@ -1,10 +1,14 @@
 import time
 import datetime
 
+from django.db import transaction
+
 from user.models import User
 from social.models import Swiped, Friend
+from swiper import config
 from libs.cache import rds
-from commons.keys import SUPERLIKED_KEY_FORMAT
+from commons import status
+from commons.keys import SUPERLIKED_KEY_FORMAT, REWIND_KEY_FORMAT
 
 
 def rcmd(user):
@@ -61,3 +65,28 @@ def dislike_someone(user, sid):
     '''不喜欢某人'''
     Swiped.swipe(uid=user.id, sid=sid, stype='dislike')
     rds.zrem(SUPERLIKED_KEY_FORMAT % user.id, sid)
+
+
+def rewind_swiped(user):
+    '''反悔最近一次滑动记录'''
+    # 1.反悔次数
+    rewind_times = rds.get(REWIND_KEY_FORMAT % user.id, 0)
+    if rewind_times >= config.DAILY_REWIND_TIMES:
+        raise status.RewindLimitError(msg='滑动超上限')
+    # 2.最近一次滑动情况
+    latest_swiped = Swiped.objects.filter(uid=user.id).latest('stime')
+    now = datetime.datetime.now()
+    if (now - latest_swiped.stime).total_seconds() >= config.REWIND_TIMEOUT:
+        raise status.RewindTimeOutError(msg='滑动间隔超过指定时间')
+    # 3.删除好友关系 / 删除优先推荐队列 / 删除滑动记录 / 更新滑动次数
+    # TODO 搜索相关的事务用法和封装
+    with transaction.atomic():
+        if latest_swiped.stype in ['like', 'superlike']:
+            Friend.break_off(user.id, latest_swiped.sid)
+        if latest_swiped == 'superlike':
+            rds.zrem(SUPERLIKED_KEY_FORMAT % latest_swiped.sid, user.id)
+        latest_swiped.delete()
+
+        next_zero = datetime.datetime(now.year, now.month, now.day) + datetime.timedelta(1)
+        remain_seconds = (next_zero - now).total_seconds()
+        rds.set(REWIND_KEY_FORMAT % user.id, rewind_times + 1, ex=int(remain_seconds))

@@ -12,7 +12,7 @@ class Swiped(models.Model):
         ('dislike', '不喜欢'),
     )
     uid = models.IntegerField(verbose_name='滑动者的UID')
-    sid = models.IntegerField(verbose_name='被滑动者的UID') 
+    sid = models.IntegerField(verbose_name='被滑动者的UID')
     stype = models.CharField(max_length=10, choices=STYPE, verbose_name='滑动的类型')
     stime = models.DateTimeField(auto_now_add=True, verbose_name='滑动时间')
 
@@ -56,6 +56,7 @@ class Friend(models.Model):
 
     @classmethod
     def friend_ids(cls, uid):
+        '''查询uid下的所有好友ID'''
         condition = Q(uid1=uid) | Q(uid2=uid)
         friends = Friend.objects.filter(condition)
         uid_list = []
@@ -63,3 +64,9 @@ class Friend(models.Model):
             friend_id = friend.uid2 if friend.uid1 == uid else friend.uid1
             uid_list.append(friend_id)
         return uid_list
+
+    @classmethod
+    def break_off(cls, uid, sid):
+        '''删除好友关系'''
+        uid1, uid2 = (uid, sid) if uid < sid else (sid, uid)
+        cls.objects.filter(uid1=uid1, uid2=uid2).delete()
