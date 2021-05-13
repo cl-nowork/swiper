@@ -4,6 +4,7 @@ from social import logics
 from libs.http import render_json
 from social.models import Swiped, Friend
 from user.models import User
+from vip.logics import need_permission
 
 
 def get_rcmd_users(request):
@@ -20,6 +21,7 @@ def like(request):
     return render_json({'matched': is_matched}, msg='success')
 
 
+@need_permission
 def superlike(request):
     '''上滑, 超级喜欢'''
     sid = int(request.POST.get('sid'))
@@ -34,7 +36,8 @@ def dislike(request):
     return render_json(msg='success')
 
 
-def who_liked_me(request):
+@need_permission
+def show_liked_me(request):
     '''查看都有谁喜欢过我'''
     like_me_ids = Swiped.who_liked_me(request.user.id)
     users = User.objects.filter(id__in=like_me_ids)
@@ -51,6 +54,7 @@ def friend_list(request):
     return render_json(result)
 
 
+@need_permission
 def rewind(request):
     '''反悔'''
     logics.rewind_swiped(request.user)

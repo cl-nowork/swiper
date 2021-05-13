@@ -11,10 +11,16 @@ class Vip(models.Model):
     class Meta:
         db_table = 'vip'
 
+    def has_perm(self, perm_name):
+        '''检查当前vip是否指定权限'''
+        perm = Permission.objects.filter(name=perm_name).only('id').first()
+        return VipPermRelation.objects.filter(vip_id=self.id, perm_id=perm.id).exists()
+
 
 class Permission(models.Model):
     '''权限表'''
     name = models.CharField(max_length=16, verbose_name='权限名称')
+    desc = models.TextField(verbose_name='权限的描述')
 
     class Meta:
         db_table = 'permission'
