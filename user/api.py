@@ -4,8 +4,9 @@ from django.core.cache import cache
 from django.shortcuts import redirect
 
 from commons import status
-from commons.keys import VCODE_KEY_FORMAT
+from commons.keys import VCODE_KEY_FORMAT, PROFILE_KEY_FORMAT
 from commons.utils import gen_nickname
+from libs.cache import rds
 from swiper import config
 from libs.http import render_json
 from user import logics
@@ -22,7 +23,7 @@ def get_vcode(request):
         raise status.InvildParams(msg='phonenum 字段为空')
     if logics.send_vcode(phonenum):
         return render_json(data=None, msg='短信发送成功')
-    raise status.VCODE_ERROR(msg='短信发送失败')
+    raise status.VcodeError(msg='短信发送失败')
 
 
 def check_vcode(request):
@@ -67,7 +68,11 @@ def wb_callback(request):
 
 def get_profile(request):
     '''获取交友资料'''
-    profile_data = request.user.profile.to_dict()
+    key = PROFILE_KEY_FORMAT % request.user.id
+    profile_data = rds.get(key)
+    if profile_data is None:
+        profile_data = request.user.profile.to_dict()
+        rds.set(key, profile_data)
     return render_json(data=profile_data, msg='查询成功')
 
 

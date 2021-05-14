@@ -17,3 +17,21 @@ def test():
             sex='female',
             location='浙江',
         )
+
+
+class App:
+    def __init__(self):
+        self.li = []
+
+    def route(self):
+        def add_url(x):
+            self.li.append(x)
+            print(self.li)
+        return add_url
+
+
+global_num = 10
+
+def _add():
+    # global_num += 1
+    print(global_num)
