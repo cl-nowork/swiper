@@ -1,3 +1,5 @@
+import logging
+
 from django.core.cache import cache
 from django.shortcuts import redirect
 
@@ -10,7 +12,7 @@ from user import logics
 from user.models import User
 from user.forms import UserForms, ProfileForms
 
-# Create your views here.
+inf_log = logging.getLogger('inf')
 
 
 def get_vcode(request):
@@ -34,6 +36,7 @@ def check_vcode(request):
             user = User.objects.get(phonenum=phonenum)
         except User.DoesNotExist:
             user = User.objects.create(phonenum=phonenum, nickname=gen_nickname())
+        inf_log.info(f'User-{user.id} login in')
         request.session['uid'] = user.id
         return render_json(data=user.to_dict(), msg='登录成功')
     else:

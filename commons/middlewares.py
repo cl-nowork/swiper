@@ -1,7 +1,11 @@
+import logging
+
 from django.utils.deprecation import MiddlewareMixin
 from user.models import User
 from commons import status
 from libs.http import render_json
+
+err_log = logging.getLogger('err')
 
 
 class AuthorizeMiddleware(MiddlewareMixin):
@@ -24,7 +28,8 @@ class AuthorizeMiddleware(MiddlewareMixin):
 
 class LogicErrorMiddleware(MiddlewareMixin):
     '''逻辑错误中间件'''
-
     def process_exception(self, request, exception):
         if isinstance(exception, status.LogicError):
+            Remote_ip = request.META['REMOTE_ADDR']
+            err_log.error(f'logic error IP {Remote_ip} {exception.code} {exception.data} :{exception.msg}')
             return render_json(code=exception.code, data=exception.data, msg=exception.msg)
