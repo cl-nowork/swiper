@@ -89,6 +89,10 @@ def set_profile(request):
     user.save()
     user.profile.__dict__.update(profile_form.cleaned_data)
     user.profile.save()
+
+    # 修改缓存中交友资料
+    key = PROFILE_KEY_FORMAT % request.user.id
+    rds.set(key, user.profile.to_dict())
     return render_json(data=None, msg='更新成功')
 
 
