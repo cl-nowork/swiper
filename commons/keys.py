@@ -9,3 +9,5 @@ SUPERLIKED_KEY_FORMAT = 'superliked-%s'
 REWIND_KEY_FORMAT = 'rewind-%s'
 
 PROFILE_KEY_FORMAT = 'profile-%s'
+
+MODEL_KEY_FORMAT = 'Model-%s-%s'
