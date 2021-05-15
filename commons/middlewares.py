@@ -22,7 +22,7 @@ class AuthorizeMiddleware(MiddlewareMixin):
             return
         uid = request.session.get('uid')
         if not uid:
-            raise status.NoLoginError(msg='需要登录')
+            return render_json(code=status.NoLoginError.code, msg='需要登录')
         request.user = User.objects.get(id=uid)
 
 
