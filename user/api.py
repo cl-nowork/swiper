@@ -39,7 +39,7 @@ def check_vcode(request):
             user = User.objects.create(phonenum=phonenum, nickname=gen_nickname())
         inf_log.info(f'User-{user.id} login in')
         request.session['uid'] = user.id
-        return render_json(data=user.to_dict(), msg='登录成功')
+        return render_json(data=user.to_dict_after_exclude(), msg='登录成功')
     else:
         raise status.InvilidVcode(msg='验证码错误')
 
@@ -63,16 +63,12 @@ def wb_callback(request):
     except User.DoesNotExist:
         user = User.objects.create(**user_info)
     request.session['uid'] = user.id
-    return render_json(data=user.to_dict(), msg='登录成功')
+    return render_json(data=user.to_dict_after_exclude(), msg='登录成功')
 
 
 def get_profile(request):
     '''获取交友资料'''
-    key = PROFILE_KEY_FORMAT % request.user.id
-    profile_data = rds.get(key)
-    if profile_data is None:
-        profile_data = request.user.profile.to_dict()
-        rds.set(key, profile_data)
+    profile_data = request.user.profile.to_dict()
     return render_json(data=profile_data, msg='查询成功')
 
 
@@ -89,10 +85,6 @@ def set_profile(request):
     user.save()
     user.profile.__dict__.update(profile_form.cleaned_data)
     user.profile.save()
-
-    # 修改缓存中交友资料
-    key = PROFILE_KEY_FORMAT % request.user.id
-    rds.set(key, user.profile.to_dict())
     return render_json(data=None, msg='更新成功')
 
 

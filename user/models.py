@@ -37,16 +37,8 @@ class User(models.Model):
             self._vip = Vip.objects.get(id=self.vip_id)
         return self._vip
 
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'phonenum': self.phonenum,
-            'nickname': self.nickname,
-            'sex': self.sex,
-            'birth_day': str(self.birth_day),
-            'avatar': self.avatar,
-            'location': self.location,
-        }
+    def to_dict_after_exclude(self):
+        return self.to_dict('vip_id', 'ext_uid', 'vip_expired')
 
 
 class Profile(models.Model):
@@ -64,17 +56,3 @@ class Profile(models.Model):
 
     class Meta:
         db_table = 'profile'
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'dating_sex': self.dating_sex,
-            'dating_location': self.dating_location,
-            'min_dating_age': self.min_dating_age,
-            'max_dating_age': self.max_dating_age,
-            'min_distance': self.min_distance,
-            'max_distance': self.max_distance,
-            'vibration': self.vibration,
-            'only_matched': self.only_matched,
-            'auto_play': self.auto_play,
-        }

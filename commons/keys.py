@@ -11,3 +11,5 @@ REWIND_KEY_FORMAT = 'rewind-%s'
 PROFILE_KEY_FORMAT = 'profile-%s'
 
 MODEL_KEY_FORMAT = 'Model-%s-%s'
+
+HOT_RANK_KEY = 'HotRank'

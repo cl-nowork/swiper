@@ -2,6 +2,7 @@ import time
 import datetime
 
 from django.db import transaction
+from commons import keys
 
 from user.models import User
 from social.models import Swiped, Friend
@@ -85,8 +86,19 @@ def rewind_swiped(user):
             Friend.break_off(user.id, latest_swiped.sid)
         if latest_swiped == 'superlike':
             rds.zrem(SUPERLIKED_KEY_FORMAT % latest_swiped.sid, user.id)
+
+        # 撤销滑动积分数据
+        score = -config.SWIPE_SCORE[latest_swiped.stype]
+        rds.zincrby(keys.HOT_RANK_KEY, score, latest_swiped.sid)
+
         latest_swiped.delete()
 
         next_zero = datetime.datetime(now.year, now.month, now.day) + datetime.timedelta(1)
         remain_seconds = (next_zero - now).total_seconds()
         rds.set(REWIND_KEY_FORMAT % user.id, rewind_times + 1, ex=int(remain_seconds))
+
+
+def set_scores(uid, stype):
+    '''给用户设置滑动积分'''
+    score = config.SWIPE_SCORE[stype]
+    rds.zincrby(keys.HOT_RANK_KEY, score, uid)

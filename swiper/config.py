@@ -7,6 +7,13 @@ REDIS_CONFIG = {
     'db': 3
 }
 
+# 滑动积分配置
+SWIPE_SCORE ={
+    'like': 5,
+    'superlike': 7,
+    'dislike': -5
+}
+
 # 程序：反悔配置
 DAILY_REWIND_TIMES = 3      # 每日反悔次数
 REWIND_TIMEOUT = 5 * 60     # 反悔时间间隔描述
