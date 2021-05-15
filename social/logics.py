@@ -102,3 +102,23 @@ def set_scores(uid, stype):
     '''给用户设置滑动积分'''
     score = config.SWIPE_SCORE[stype]
     rds.zincrby(keys.HOT_RANK_KEY, score, uid)
+
+
+def top_n(num):
+    '''取出排行榜前n的用户信息'''
+    rank_data = rds.zrevrange(keys.HOT_RANK_KEY, 0, num - 1, withscores=True)
+    # 进行类型清理
+    cleaned = [[int(uid), int(score)] for uid, score in rank_data]
+
+    uid_list = [uid for uid, _ in cleaned]
+    users = User.objects.filter(id__in=uid_list)
+    users = sorted(users, key=lambda user: uid_list.index(user.id))
+
+    result = {}
+    exclude_fields = ['phonenum', 'birth_day', 'avatar', 'location', 'ext_uid', 'vip_id', 'vip_expired']
+    for idx, user in enumerate(users):
+        u_dict = user.to_dict(*exclude_fields)
+        score = cleaned[idx][1]
+        u_dict['score'] = score
+        result[idx] = u_dict
+    return result

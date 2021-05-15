@@ -62,3 +62,9 @@ def rewind(request):
     '''反悔'''
     logics.rewind_swiped(request.user)
     return render_json(msg='success')
+
+
+def hot_rank(requst):
+    '''获取热度排行'''
+    rank_data = logics.top_n(50)
+    return render_json(rank_data)

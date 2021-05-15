@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^show_liked_me', api.show_liked_me),
     url(r'^friend_list', api.friend_list),
     url(r'^rewind', api.rewind),
+    url(r'^hot_rank', api.hot_rank),
 ]
