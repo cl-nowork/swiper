@@ -137,3 +137,6 @@ dmypy.json
 
 # qiniu
 .qiniu*.json
+
+# log
+logs/*
