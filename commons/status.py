@@ -9,6 +9,7 @@ class LogicError(Exception):
     msg = ''
 
     def __init__(self, data=None, msg=''):
+        # TODO 此处不需要初始化data
         self.data = data
         self.msg = msg
 
